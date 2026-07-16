@@ -331,7 +331,7 @@ function LeadGateForm({ onSubmit }: LeadFormProps) {
         )}
       </button>
       <p className="text-center text-[11px] text-white/25 leading-relaxed">
-        No spam. We'll send your personalized savings report and follow up with a free fleet consultation.
+        No spam. We'll send your personalized estimate and follow up with a complimentary 15-Minute Fleet Downtime Review.
       </p>
     </form>
   );
@@ -354,7 +354,20 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
   return (
     <div className="animate-unlock space-y-4">
 
-      {/* ── True Cost Per Visit — the objection killer ── */}
+      {/* ── Success confirmation banner ── */}
+      <div className="rounded-xl p-4 border border-green-500/30 bg-green-500/8 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-green-500/20 border border-green-500/30 flex items-center justify-center shrink-0 mt-0.5">
+          <CheckCircle2 className="w-4 h-4 text-green-400" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-green-300 mb-0.5">Estimate unlocked, {firstName}!</p>
+          <p className="text-xs text-white/50 leading-relaxed">
+            A fleet specialist will review your numbers, answer service questions, and determine whether our mobile maintenance is the right fit for your fleet. Expect a reply within 1 business day.
+          </p>
+        </div>
+      </div>
+
+      {/* ── Estimated Operating Cost Per Visit — the objection killer ── */}
       <div className="relative rounded-2xl overflow-hidden border border-orange-500/30 p-5"
         style={{ background: "linear-gradient(135deg, oklch(0.65 0.22 28 / 12%), oklch(0.65 0.22 28 / 5%))" }}>
         <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-500 via-orange-400 to-transparent" />
@@ -363,7 +376,7 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
           <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
             <Calculator className="w-3.5 h-3.5 text-orange-400" />
           </div>
-          <p className="text-[11px] font-semibold text-orange-400/80 uppercase tracking-widest">True Cost Per Visit — Hard + Soft</p>
+          <p className="text-[11px] font-semibold text-orange-400/80 uppercase tracking-widest">Estimated Operating Cost Per Visit — Hard + Soft</p>
         </div>
 
         {/* Per-visit breakdown grid */}
@@ -381,12 +394,12 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
                 <span className="text-white/70 font-medium">${fmt(inputs.hoursLostPerVisit * inputs.hourlyEmployeeCost)}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-white/40">Lost revenue ({inputs.hoursLostPerVisit}h × ${inputs.revenuePerVehicleHour})</span>
+                <span className="text-white/40">Potential revenue capacity affected ({inputs.hoursLostPerVisit}h × ${inputs.revenuePerVehicleHour}) ⓘ</span>
                 <span className="text-orange-400 font-medium">${fmt(inputs.hoursLostPerVisit * inputs.revenuePerVehicleHour)}</span>
               </div>
               <div className="h-px bg-white/10 my-1" />
               <div className="flex justify-between">
-                <span className="text-xs font-bold text-white">True cost</span>
+                <span className="text-xs font-bold text-white">Est. total cost</span>
                 <span className="metric-number text-lg text-orange-400 leading-none">${fmt(onsite.currentTrueCostPerVisit)}</span>
               </div>
             </div>
@@ -405,12 +418,12 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
                 <span className="text-white/70 font-medium">${fmt(0.5 * inputs.hourlyEmployeeCost)}</span>
               </div>
               <div className="flex justify-between text-xs">
-                <span className="text-white/40">Lost revenue (0.5h × ${inputs.revenuePerVehicleHour})</span>
+                <span className="text-white/40">Potential revenue capacity affected (0.5h × ${inputs.revenuePerVehicleHour}) ⓘ</span>
                 <span className="text-green-400/80 font-medium">${fmt(0.5 * inputs.revenuePerVehicleHour)}</span>
               </div>
               <div className="h-px bg-white/10 my-1" />
               <div className="flex justify-between">
-                <span className="text-xs font-bold text-white">True cost</span>
+                <span className="text-xs font-bold text-white">Est. total cost</span>
                 <span className="metric-number text-lg text-green-400 leading-none">${fmt(onsite.onsiteTrueCostPerVisit)}</span>
               </div>
             </div>
@@ -419,15 +432,15 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
 
         {/* Savings per visit callout */}
         <div className="rounded-xl p-3 border border-green-500/25 bg-green-500/8 text-center">
-          <p className="text-xs text-white/50 mb-0.5">You save per visit</p>
+          <p className="text-xs text-white/50 mb-0.5">Estimated savings per visit</p>
           <p className="metric-number text-3xl text-green-400 leading-none">${fmt(onsite.savingsPerVisit)}</p>
           <p className="text-[11px] text-white/35 mt-1">
-            × {fmt(totalVisits)} annual visits = <span className="font-semibold text-green-300">${fmt(onsite.savingsPerVisit * totalVisits)}/yr</span> in true cost savings
+            × {fmt(totalVisits)} annual visits = <span className="font-semibold text-green-300">${fmt(onsite.savingsPerVisit * totalVisits)}/yr</span> in estimated annual savings
           </p>
         </div>
 
         <p className="text-[10px] text-white/25 text-center mt-3 leading-relaxed">
-          That "cheaper" ${inputs.currentShopPricePerVisit} oil change is actually costing you ${fmt(onsite.currentTrueCostPerVisit)} per visit when you count the clock.
+          That "cheaper" ${inputs.currentShopPricePerVisit} service visit may carry an estimated ${fmt(onsite.currentTrueCostPerVisit)} in total operating impact when you account for employee time and potential revenue capacity.
         </p>
       </div>
 
@@ -448,7 +461,7 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
             <p className="metric-number text-5xl text-green-400 leading-none">
               <AnimatedNumber value={Math.max(0, onsite.netAnnualSavings)} prefix="$" />
             </p>
-            <p className="text-xs text-white/40 mt-1.5">per year — hard costs + soft costs combined</p>
+            <p className="text-xs text-white/40 mt-1.5">estimated annual operating impact — hard costs + potential productivity impact</p>
           </div>
           <div className="text-right shrink-0">
             <div className="inline-flex flex-col items-center px-3 py-2 rounded-xl border border-green-500/25 bg-green-500/10">
@@ -478,14 +491,11 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
         {onsite.netAnnualSavings > 0 && (
           <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
             <p className="text-xs text-green-300/80 leading-relaxed text-center">
-              <span className="font-semibold text-green-300">
-                {firstName}, your fleet pays ${fmt(onsite.onsiteServiceCost / 12)}/mo
-              </span>{" "}
-              for Onsite Fleet and recovers{" "}
-              <span className="font-semibold text-green-300">
-                ${fmt(onsite.netAnnualSavings / 12)}/mo
-              </span>{" "}
-              in total savings — a net gain every single month.
+              Estimated Onsite service cost:{" "}
+              <span className="font-semibold text-green-300">${fmt(onsite.onsiteServiceCost / 12)}/mo</span>
+              {" · "}
+              Estimated net operational savings after service cost:{" "}
+              <span className="font-semibold text-green-300">${fmt(onsite.netAnnualSavings / 12)}/mo</span>
             </p>
           </div>
         )}
@@ -513,9 +523,9 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
 
         {[
           { label: "Service Invoice Cost", current: `$${fmt(onsite.currentAnnualServiceCost)}`, onsite: `$${fmt(onsite.onsiteServiceCost)}`, sub: true },
-          { label: "Payroll Wasted", current: `$${fmt(current.annualPayrollWasted)}`, onsite: `$${fmt(onsite.onsitePayrollCost)}`, sub: true },
-          { label: "Lost Revenue", current: `$${fmt(current.estimatedLostRevenue)}`, onsite: `$${fmt(onsite.onsiteLostRevenue)}`, sub: true },
-          { label: "Total True Annual Cost", current: `$${fmt(current.totalDowntimeCost + onsite.currentAnnualServiceCost)}`, onsite: `$${fmt(onsite.onsiteTotalCost)}`, highlight: true },
+          { label: "Payroll Impact", current: `$${fmt(current.annualPayrollWasted)}`, onsite: `$${fmt(onsite.onsitePayrollCost)}`, sub: true },
+          { label: "Est. Revenue Capacity Affected ⓘ", current: `$${fmt(current.estimatedLostRevenue)}`, onsite: `$${fmt(onsite.onsiteLostRevenue)}`, sub: true },
+          { label: "Est. Total Annual Operating Impact", current: `$${fmt(current.totalDowntimeCost + onsite.currentAnnualServiceCost)}`, onsite: `$${fmt(onsite.onsiteTotalCost)}`, highlight: true },
         ].map((row) => (
           <div
             key={row.label}
@@ -547,15 +557,24 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
       {/* CTA */}
       <div className="rounded-xl p-5 border border-orange-500/20 text-center" style={{ background: "oklch(0.65 0.22 28 / 10%)" }}>
         <p className="text-sm font-semibold text-white mb-1">Ready to recover your ${fmt(Math.max(0, onsite.netAnnualSavings))}?</p>
-        <p className="text-xs text-white/45 mb-4 leading-relaxed">A fleet specialist will contact you within 1 business day to walk through your numbers and schedule a free onsite demo.</p>
-        <a
-          href="tel:+1-800-000-0000"
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white text-sm uppercase tracking-wider btn-glow"
-          style={{ background: "oklch(0.65 0.22 28)" }}
-        >
-          <Phone className="w-4 h-4" />
-          Call Now — Free Consultation
-        </a>
+        <p className="text-xs text-white/45 mb-4 leading-relaxed">A fleet specialist will review your estimates, answer service questions, and determine whether our mobile maintenance is the right fit for your fleet.</p>
+        <div className="flex flex-col gap-2.5">
+          <a
+            href="#book"
+            className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl font-semibold text-white text-sm uppercase tracking-wider btn-glow"
+            style={{ background: "oklch(0.65 0.22 28)" }}
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            Book My Free 15-Min Fleet Review
+          </a>
+          <a
+            href="tel:+1-800-000-0000"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white/70 text-sm uppercase tracking-wider border border-white/15 hover:border-white/30 hover:text-white transition-all duration-200"
+          >
+            <Phone className="w-4 h-4 text-orange-400" />
+            Or Call Us Now
+          </a>
+        </div>
       </div>
     </div>
   );
@@ -651,7 +670,7 @@ export default function Home() {
                 Five inputs. Sixty seconds. See your exact downtime cost — then see how much Onsite Fleet mobile service puts back in your pocket.
               </p>
               <div className="flex flex-wrap gap-4 text-sm text-white/45 animate-fade-in-up" style={{ animationDelay: "180ms" }}>
-                {["Under 60 seconds", "Real pricing included", "Side-by-side ROI report"].map((t) => (
+                {["Under 60 seconds", "Real pricing included", "Personalized ROI estimate"].map((t) => (
                   <div key={t} className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-3.5 h-3.5 text-green-400" />
                     {t}
@@ -673,7 +692,7 @@ export default function Home() {
                   <AnimatedNumber value={results.totalDowntimeCost} prefix="$" />
                 </p>
                 <div className="h-px bg-white/10 mb-3" />
-                <p className="text-[11px] text-white/40 uppercase tracking-wider mb-1">Potential Net Savings</p>
+                <p className="text-[11px] text-white/40 uppercase tracking-wider mb-1">Estimated Net Savings</p>
                 <p className="metric-number text-3xl text-green-400 leading-none">
                   <AnimatedNumber value={Math.max(0, onsiteResults.netAnnualSavings)} prefix="$" />
                 </p>
@@ -725,11 +744,11 @@ export default function Home() {
                 </div>
                   <div className="space-y-2">
                   {[
-                    "Your exact lost revenue figure",
-                    "Total annual downtime cost",
-                    "True cost per visit (hard + soft)",
-                    "Side-by-side ROI comparison",
-                    `Your net annual savings with Onsite Fleet`,
+                    "Estimated revenue capacity affected",
+                    "Total estimated annual operating impact",
+                    "Estimated cost per visit (hard + soft)",
+                    "Side-by-side operating cost comparison",
+                    `Your estimated net annual savings with Onsite Fleet`,
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-400/60 shrink-0" />
@@ -795,8 +814,8 @@ export default function Home() {
                   <div className="space-y-2.5">
                     <ResultCard icon={<Clock className="w-4 h-4" />} label="Annual Employee Hours Lost" value={results.annualHoursLost} prefix="" suffix=" hrs" locked={false} delay={0} />
                     <ResultCard icon={<DollarSign className="w-4 h-4" />} label="Annual Payroll Wasted" value={results.annualPayrollWasted} locked={false} delay={60} />
-                    <ResultCard icon={<TrendingDown className="w-4 h-4" />} label="Estimated Lost Revenue" value={results.estimatedLostRevenue} locked={true} unlocked={false} delay={120} />
-                    <ResultCard icon={<AlertTriangle className="w-4 h-4" />} label="Total Annual Downtime Cost" value={results.totalDowntimeCost} locked={true} unlocked={false} highlight={true} large={true} delay={180} />
+                    <ResultCard icon={<TrendingDown className="w-4 h-4" />} label="Est. Revenue Capacity Affected" value={results.estimatedLostRevenue} locked={true} unlocked={false} delay={120} />
+                    <ResultCard icon={<AlertTriangle className="w-4 h-4" />} label="Total Est. Operating Impact" value={results.totalDowntimeCost} locked={true} unlocked={false} highlight={true} large={true} delay={180} />
                   </div>
 
                   {/* Partial total teaser */}
@@ -835,7 +854,7 @@ export default function Home() {
                   {!showForm ? (
                     <div>
                       <p className="text-sm text-white/55 mb-4 leading-relaxed">
-                        <span className="text-orange-400 font-semibold">Your full cost + savings report is one step away.</span> Enter your details to unlock the complete breakdown and your personalized ROI comparison.
+                        <span className="text-orange-400 font-semibold">Your personalized estimate is one step away.</span> Enter your details to unlock the complete breakdown and your side-by-side operating cost comparison.
                       </p>
                       <button
                         onClick={() => setShowForm(true)}
@@ -853,7 +872,7 @@ export default function Home() {
                         <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
                           <Unlock className="w-3.5 h-3.5 text-orange-400" />
                         </div>
-                        Unlock Your Full ROI Report
+                        Unlock Your Personalized Estimate
                       </p>
                       <LeadGateForm onSubmit={handleLeadSubmit} />
                     </div>
@@ -905,29 +924,31 @@ export default function Home() {
           <div className="relative">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-500/30 bg-orange-500/10 text-orange-400 text-xs font-semibold mb-5 uppercase tracking-wider">
               <Zap className="w-3.5 h-3.5" />
-              Free Fleet Assessment
+              Free 15-Min Fleet Downtime Review
             </div>
             <h2 className="font-display font-extrabold text-white mb-4 leading-none" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>
               Can't Make Money<br />
               <span style={{ color: "oklch(0.65 0.22 28)" }}>If the Truck's Down.</span>
             </h2>
             <p className="text-white/50 max-w-xl mx-auto mb-8 leading-relaxed">
-              Use the calculator above to see your exact numbers. Then let a fleet specialist show you how Onsite Fleet puts that money back in your pocket — starting with your first service.
+              Use the calculator above to generate a personalized estimate based on your fleet information. Then let a fleet specialist review your numbers and determine whether our mobile maintenance is the right fit — starting with your first service.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <button
-                onClick={() => { document.getElementById("results-panel")?.scrollIntoView({ behavior: "smooth" }); if (!unlocked) setShowForm(true); }}
+              <a
+                href="#book"
                 className="btn-glow inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-white text-sm uppercase tracking-wider"
                 style={{ background: "oklch(0.65 0.22 28)" }}
               >
-                <Calculator className="w-4 h-4" />
-                {unlocked ? "View My ROI Report" : "Calculate My Savings"}
-              </button>
-              <a href="tel:+1-800-000-0000"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-white/80 text-sm uppercase tracking-wider border border-white/15 hover:border-white/30 hover:text-white transition-all duration-200">
-                <Phone className="w-4 h-4 text-orange-400" />
-                Call Us Free
+                <CheckCircle2 className="w-4 h-4" />
+                Book My Free 15-Min Fleet Review
               </a>
+              <button
+                onClick={() => { document.getElementById("results-panel")?.scrollIntoView({ behavior: "smooth" }); if (!unlocked) setShowForm(true); }}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-white/80 text-sm uppercase tracking-wider border border-white/15 hover:border-white/30 hover:text-white transition-all duration-200"
+              >
+                <Calculator className="w-4 h-4 text-orange-400" />
+                {unlocked ? "View My Estimate" : "See My Numbers"}
+              </button>
             </div>
           </div>
         </div>
