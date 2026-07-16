@@ -1,9 +1,8 @@
-const LOGO_SRC = "/assets/onsite_logo.png?v=20260716e";
-const PETE_SRC = "/assets/pete.png?v=20260716e";
+const LOGO_SRC = "/assets/onsite_logo.png?v=20260716f";
+const PETE_SRC = "/assets/pete.png?v=20260716f";
 const BRAND_ORANGE = "#f3893b";
 const BRAND_ORANGE_RGB = "243, 137, 59";
 const PHONE_HREF = "tel:+14806282588";
-const PHONE_DISPLAY = "480-628-2588";
 const LOADER_MS = 5600;
 
 const REVIEW_CALENDAR_URL = (import.meta.env.VITE_PETE_REVIEW_CALENDAR_URL || "").trim();
@@ -17,7 +16,7 @@ function installStylesheet() {
   const link = document.createElement("link");
   link.id = "onsite-enhancement-css";
   link.rel = "stylesheet";
-  link.href = "/onsiteEnhancements.css?v=20260716e";
+  link.href = "/onsiteEnhancements.css?v=20260716f";
   document.head.appendChild(link);
 }
 
@@ -122,14 +121,53 @@ function applyBrandOrange() {
   });
 }
 
+function replaceVisibleLabel(control: HTMLElement, label: string) {
+  const icon = control.querySelector("svg")?.cloneNode(true);
+  control.replaceChildren();
+  if (icon) control.appendChild(icon);
+  control.append(document.createTextNode(label));
+}
+
 function fixPhoneLinks() {
   document.querySelectorAll<HTMLAnchorElement>('a[href^="tel:"]').forEach((link) => {
     link.href = PHONE_HREF;
-    const text = link.textContent || "";
-    if (/call us free/i.test(text) || /or call us now/i.test(text)) {
-      link.textContent = `Call ${PHONE_DISPLAY}`;
+    if (link.dataset.onsitePhoneLabel !== "true") {
+      replaceVisibleLabel(link, "CALL NOW");
+      link.dataset.onsitePhoneLabel = "true";
     }
   });
+}
+
+function standardizeReviewCopy() {
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  while (node) {
+    const parent = node.parentElement;
+    if (parent && !["SCRIPT", "STYLE", "NOSCRIPT"].includes(parent.tagName)) {
+      const value = node.nodeValue || "";
+      const next = value
+        .replace(/15[-\s]?min(?:ute)?s?/gi, (match) =>
+          /minute/i.test(match) ? "20-minute" : "20-min"
+        )
+        .replace(/free\s+20-min\s+fleet\s+downtime\s+review/gi, "Free 20-Min Fleet Review");
+      if (next !== value) node.nodeValue = next;
+    }
+    node = walker.nextNode();
+  }
+}
+
+function ensureSectionAnchors() {
+  const calculatorCard = Array.from(document.querySelectorAll<HTMLElement>("div")).find(
+    (node) => node.textContent?.includes("Your Fleet Numbers") && node.className.includes("rounded-2xl")
+  );
+  const calculatorSection = calculatorCard?.closest("section") as HTMLElement | null;
+  if (calculatorSection) calculatorSection.id = "calculator";
+
+  const howHeading = Array.from(document.querySelectorAll<HTMLElement>("h1,h2,h3")).find((node) =>
+    /how onsite fleet eliminates downtime/i.test(node.textContent || "")
+  );
+  const howSection = howHeading?.closest("section") as HTMLElement | null;
+  if (howSection) howSection.id = "how-onsite-works";
 }
 
 function addPeteStrip() {
@@ -164,18 +202,18 @@ function findUnlockButton() {
 function openLeadForm(intent: string) {
   pendingIntent = intent;
   const button = findUnlockButton();
-  if (button) {
-    button.click();
-    window.setTimeout(() => {
-      const form = Array.from(document.querySelectorAll<HTMLFormElement>("form")).find((candidate) =>
-        candidate.textContent?.includes("Unlock My Full ROI Report")
-      );
-      form?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
-  }
+  if (!button) return;
+
+  button.click();
+  window.setTimeout(() => {
+    const form = Array.from(document.querySelectorAll<HTMLFormElement>("form")).find((candidate) =>
+      candidate.textContent?.includes("Unlock My Full ROI Report")
+    );
+    form?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 100);
 }
 
-function moveUnlockButtonToHeader() {
+function installTopUnlockButton() {
   const costTitle = Array.from(document.querySelectorAll<HTMLElement>("h2,h3,p,div")).find((node) =>
     node.textContent?.trim() === "Cost Breakdown"
   );
@@ -183,25 +221,30 @@ function moveUnlockButtonToHeader() {
 
   const headerRow = costTitle.closest("div.flex") as HTMLElement | null;
   if (!headerRow) return;
+  if (headerRow.querySelector("#onsite-top-unlock")) return;
 
-  const partialButton = Array.from(headerRow.querySelectorAll<HTMLButtonElement>("button")).find((button) =>
-    /partial/i.test(button.textContent || "")
+  const partial = Array.from(headerRow.querySelectorAll<HTMLElement>("button,span,div")).find((node) =>
+    node.textContent?.trim().toLowerCase() === "partial"
   );
-  if (!partialButton) return;
 
-  partialButton.textContent = "Unlock Full Report";
-  partialButton.className =
-    "onsite-top-unlock inline-flex items-center justify-center px-4 py-2 rounded-lg font-semibold text-white text-xs uppercase tracking-wider";
-  partialButton.style.background = BRAND_ORANGE;
-  partialButton.onclick = (event) => {
+  const button = document.createElement("button");
+  button.id = "onsite-top-unlock";
+  button.type = "button";
+  button.className = "onsite-top-unlock";
+  button.textContent = "Unlock Full Report";
+  button.addEventListener("click", (event) => {
     event.preventDefault();
     openLeadForm("unlock-full-report");
-  };
+  });
+
+  if (partial) partial.replaceWith(button);
+  else headerRow.appendChild(button);
 }
 
 function wireAllUnlockButtons() {
   document.querySelectorAll<HTMLButtonElement>("button").forEach((button) => {
     if (!/unlock full report|unlock full roi report/i.test(button.textContent || "")) return;
+    if (button.id === "onsite-top-unlock") return;
     if (button.dataset.onsiteWired === "true") return;
     button.dataset.onsiteWired = "true";
     button.addEventListener("click", () => {
@@ -210,20 +253,25 @@ function wireAllUnlockButtons() {
   });
 }
 
+function launchBooking(mode: "review" | "maintenance") {
+  const url = mode === "review" ? REVIEW_CALENDAR_URL : MAINTENANCE_CALENDAR_URL;
+  pendingIntent = mode === "review" ? "book-20-minute-review" : "schedule-maintenance";
+  if (url) {
+    window.open(url, "_blank", "noopener,noreferrer");
+    return;
+  }
+  openLeadForm(pendingIntent);
+}
+
 function createBookingButton(label: string, mode: "review" | "maintenance") {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = mode === "review" ? "onsite-booking-button onsite-booking-primary" : "onsite-booking-button onsite-booking-secondary";
+  button.className =
+    mode === "review"
+      ? "onsite-booking-button onsite-booking-primary"
+      : "onsite-booking-button onsite-booking-secondary";
   button.textContent = label;
-  button.addEventListener("click", () => {
-    const url = mode === "review" ? REVIEW_CALENDAR_URL : MAINTENANCE_CALENDAR_URL;
-    pendingIntent = mode === "review" ? "book-20-minute-review" : "schedule-maintenance";
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-      return;
-    }
-    openLeadForm(pendingIntent);
-  });
+  button.addEventListener("click", () => launchBooking(mode));
   return button;
 }
 
@@ -243,6 +291,97 @@ function installBookingActions() {
     createBookingButton("Book My Free 20-Min Fleet Review", "review"),
     createBookingButton("Schedule Fleet Maintenance Today", "maintenance")
   );
+}
+
+function scrollToAnchor(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function installMobileMenu() {
+  const headerInner = document.querySelector("header > div") as HTMLElement | null;
+  if (!headerInner || document.getElementById("onsite-mobile-menu-button")) return;
+
+  const menuButton = document.createElement("button");
+  menuButton.id = "onsite-mobile-menu-button";
+  menuButton.type = "button";
+  menuButton.className = "onsite-mobile-menu-button";
+  menuButton.setAttribute("aria-label", "Open navigation menu");
+  menuButton.setAttribute("aria-expanded", "false");
+  menuButton.innerHTML = '<span></span><span></span><span></span>';
+
+  const overlay = document.createElement("div");
+  overlay.id = "onsite-mobile-menu-overlay";
+  overlay.className = "onsite-mobile-menu-overlay";
+  overlay.setAttribute("aria-hidden", "true");
+
+  const drawer = document.createElement("aside");
+  drawer.className = "onsite-mobile-drawer";
+  drawer.setAttribute("aria-label", "Mobile navigation");
+
+  const drawerHeader = document.createElement("div");
+  drawerHeader.className = "onsite-mobile-drawer-header";
+  drawerHeader.appendChild(logoImage("onsite-mobile-drawer-logo"));
+
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "onsite-mobile-close";
+  closeButton.setAttribute("aria-label", "Close navigation menu");
+  closeButton.textContent = "×";
+  drawerHeader.appendChild(closeButton);
+
+  const nav = document.createElement("nav");
+  nav.className = "onsite-mobile-nav";
+
+  const callLink = document.createElement("a");
+  callLink.href = PHONE_HREF;
+  callLink.className = "onsite-mobile-nav-item onsite-mobile-nav-primary";
+  callLink.textContent = "CALL NOW";
+
+  const createNavButton = (label: string, action: () => void, className = "") => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `onsite-mobile-nav-item ${className}`.trim();
+    button.textContent = label;
+    button.addEventListener("click", action);
+    return button;
+  };
+
+  const liveCalculator = createNavButton("Live Calculator", () => scrollToAnchor("calculator"));
+  const review = createNavButton("Book Free 20-Min Review", () => launchBooking("review"));
+  const service = createNavButton("Schedule Fleet Maintenance", () => launchBooking("maintenance"));
+  const howItWorks = createNavButton("How OnSite Eliminates Downtime", () => scrollToAnchor("how-onsite-works"));
+
+  nav.append(callLink, liveCalculator, review, service, howItWorks);
+  drawer.append(drawerHeader, nav);
+  overlay.appendChild(drawer);
+  document.body.appendChild(overlay);
+  headerInner.appendChild(menuButton);
+
+  const closeMenu = () => {
+    overlay.classList.remove("is-open");
+    overlay.setAttribute("aria-hidden", "true");
+    menuButton.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("onsite-menu-open");
+  };
+
+  const openMenu = () => {
+    overlay.classList.add("is-open");
+    overlay.setAttribute("aria-hidden", "false");
+    menuButton.setAttribute("aria-expanded", "true");
+    document.body.classList.add("onsite-menu-open");
+  };
+
+  menuButton.addEventListener("click", () => {
+    if (overlay.classList.contains("is-open")) closeMenu();
+    else openMenu();
+  });
+  closeButton.addEventListener("click", closeMenu);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeMenu();
+  });
+  nav.addEventListener("click", (event) => {
+    if ((event.target as HTMLElement).closest("a,button")) window.setTimeout(closeMenu, 50);
+  });
 }
 
 function createTruck() {
@@ -354,10 +493,13 @@ export function installOnsiteEnhancements() {
       replaceFooterBranding();
       applyBrandOrange();
       fixPhoneLinks();
+      standardizeReviewCopy();
+      ensureSectionAnchors();
       addPeteStrip();
-      moveUnlockButtonToHeader();
+      installTopUnlockButton();
       wireAllUnlockButtons();
       installBookingActions();
+      installMobileMenu();
     });
   };
 
