@@ -1,5 +1,8 @@
-const LOGO_SRC = "/assets/onsite_logo.png?v=20260716b";
-const BRAND_ORANGE = "#f7941d";
+import { PETE_SRC } from "./peteAsset";
+
+const LOGO_SRC = "/assets/onsite_logo.png?v=20260716c";
+const BRAND_ORANGE = "#f3893b";
+const BRAND_ORANGE_RGB = "243, 137, 59";
 const PHONE_HREF = "tel:+14806282588";
 const PHONE_DISPLAY = "480-628-2588";
 const LOADER_MS = 5600;
@@ -11,7 +14,7 @@ function installStylesheet() {
   const link = document.createElement("link");
   link.id = "onsite-enhancement-css";
   link.rel = "stylesheet";
-  link.href = "/onsiteEnhancements.css?v=20260716b";
+  link.href = "/onsiteEnhancements.css?v=20260716c";
   document.head.appendChild(link);
 }
 
@@ -19,6 +22,14 @@ function logoImage(className: string) {
   const img = document.createElement("img");
   img.src = LOGO_SRC;
   img.alt = "OnSite Fleet & Auto Care";
+  img.className = className;
+  return img;
+}
+
+function peteImage(className: string) {
+  const img = document.createElement("img");
+  img.src = PETE_SRC;
+  img.alt = "Pete DeFleet Guy";
   img.className = className;
   return img;
 }
@@ -53,31 +64,61 @@ function replaceFooterBranding() {
   if (!footer) return;
   const footerInner = footer.querySelector("div");
   if (!footerInner) return;
-  let logo = footer.querySelector(".onsite-footer-logo");
-  if (!logo) {
-    const firstBlock = footerInner.firstElementChild as HTMLElement | null;
-    const replacement = document.createElement("div");
-    replacement.className = "flex items-center";
-    replacement.appendChild(logoImage("onsite-footer-logo"));
-    if (firstBlock) firstBlock.replaceWith(replacement);
-    else footerInner.prepend(replacement);
-  }
+
+  const existingLogo = footer.querySelector(".onsite-footer-logo");
+  if (existingLogo) return;
+
+  const firstBlock = footerInner.firstElementChild as HTMLElement | null;
+  const replacement = document.createElement("div");
+  replacement.className = "flex items-center";
+  replacement.appendChild(logoImage("onsite-footer-logo"));
+  if (firstBlock) firstBlock.replaceWith(replacement);
+  else footerInner.prepend(replacement);
+}
+
+function alphaFromClass(classes: string, prefix: "bg" | "border") {
+  const match = classes.match(new RegExp(`${prefix}-orange-\\d+\\/(\\d+)`));
+  if (!match) return null;
+  const percent = Number(match[1]);
+  return Number.isFinite(percent) ? Math.max(0, Math.min(1, percent / 100)) : null;
 }
 
 function applyBrandOrange() {
   document.documentElement.style.setProperty("--primary", BRAND_ORANGE);
   document.documentElement.style.setProperty("--ring", BRAND_ORANGE);
+
   document.querySelectorAll<HTMLElement>('[class*="orange-"]').forEach((node) => {
     const classes = String(node.className);
-    if (classes.includes("text-orange-")) node.style.color = BRAND_ORANGE;
-    if (classes.includes("bg-orange-")) node.style.backgroundColor = BRAND_ORANGE;
-    if (classes.includes("border-orange-")) node.style.borderColor = BRAND_ORANGE;
+
+    if (classes.includes("text-orange-")) {
+      node.style.color = BRAND_ORANGE;
+    }
+
+    if (classes.includes("bg-orange-")) {
+      const alpha = alphaFromClass(classes, "bg");
+      node.style.backgroundColor =
+        alpha === null ? BRAND_ORANGE : `rgba(${BRAND_ORANGE_RGB}, ${alpha})`;
+    }
+
+    if (classes.includes("border-orange-")) {
+      const alpha = alphaFromClass(classes, "border");
+      node.style.borderColor =
+        alpha === null ? BRAND_ORANGE : `rgba(${BRAND_ORANGE_RGB}, ${alpha})`;
+    }
   });
+
   document.querySelectorAll<HTMLElement>("[style]").forEach((node) => {
     const value = node.getAttribute("style");
-    if (value?.includes("oklch(0.65 0.22 28)")) {
-      node.setAttribute("style", value.replaceAll("oklch(0.65 0.22 28)", BRAND_ORANGE));
-    }
+    if (!value?.includes("oklch(0.65 0.22 28")) return;
+
+    const corrected = value
+      .replace(/oklch\(0\.65 0\.22 28 \/ (\d+)%\)/g, (_match, percent) => {
+        const alpha = Math.max(0, Math.min(1, Number(percent) / 100));
+        return `rgba(${BRAND_ORANGE_RGB}, ${alpha})`;
+      })
+      .replaceAll("oklch(0.65 0.22 28)", BRAND_ORANGE);
+
+    node.setAttribute("style", corrected);
   });
 }
 
@@ -102,18 +143,16 @@ function addPeteStrip() {
   strip.id = "onsite-pete-strip";
   strip.className = "onsite-pete-strip";
 
-  const avatar = document.createElement("div");
-  avatar.className = "onsite-pete-avatar";
-  avatar.textContent = "👨‍🔧";
-
   const copy = document.createElement("div");
   copy.className = "onsite-pete-copy";
   const title = document.createElement("strong");
   title.textContent = "Meet Pete DeFleet Guy — your Fleet Savings Advisor.";
   const subtitle = document.createElement("span");
-  subtitle.textContent = "Always have a complete fleet with Pete. OnSite service today. Fewer surprises tomorrow.";
+  subtitle.textContent =
+    "Always have a complete fleet with Pete. OnSite service today. Fewer surprises tomorrow.";
   copy.append(title, subtitle);
-  strip.append(avatar, copy);
+
+  strip.append(peteImage("onsite-pete-avatar"), copy);
   card.insertBefore(strip, card.firstChild);
 }
 
@@ -138,13 +177,10 @@ function showLoader() {
 
   const stage = document.createElement("div");
   stage.className = "onsite-loader-stage";
-  const pete = document.createElement("div");
-  pete.className = "onsite-pete-large";
-  pete.textContent = "👨‍🔧";
   const road = document.createElement("div");
   road.className = "onsite-road";
   road.appendChild(createTruck());
-  stage.append(pete, road);
+  stage.append(peteImage("onsite-pete-large"), road);
 
   const heading = document.createElement("h2");
   heading.textContent = "Pete is crunching your fleet numbers...";
@@ -185,7 +221,10 @@ function showLoader() {
     window.setTimeout(() => {
       overlay.remove();
       document.body.style.overflow = "";
-      document.getElementById("results-panel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document.getElementById("results-panel")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }, 360);
   }, LOADER_MS);
 }
