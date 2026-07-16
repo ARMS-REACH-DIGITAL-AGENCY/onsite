@@ -13,4 +13,4 @@ type LeadPayload = {
     revenuePerVehicleHour?: number;
     currentShopPricePerVisit?: number;
     annualHoursLost?: number;
-    annual
+    annualPayrollWasted?: number;
