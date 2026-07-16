@@ -49,6 +49,7 @@ interface CalcInputs {
   serviceVisitsPerYear: number;
   hoursLostPerVisit: number;
   revenuePerVehicleHour: number;
+  currentShopPricePerVisit: number;
 }
 
 interface CalcResults {
@@ -67,6 +68,11 @@ interface OnsiteResults {
   netAnnualSavings: number;
   hoursRecovered: number;
   savingsPercent: number;
+  // True Cost Per Visit
+  currentTrueCostPerVisit: number;
+  onsiteTrueCostPerVisit: number;
+  savingsPerVisit: number;
+  currentAnnualServiceCost: number;
 }
 
 interface LeadForm {
@@ -91,7 +97,7 @@ function calculate(inputs: CalcInputs): CalcResults {
 }
 
 function calculateOnsite(inputs: CalcInputs, current: CalcResults): OnsiteResults {
-  const { numVehicles, hourlyEmployeeCost, serviceVisitsPerYear, revenuePerVehicleHour } = inputs;
+  const { numVehicles, hourlyEmployeeCost, serviceVisitsPerYear, revenuePerVehicleHour, currentShopPricePerVisit } = inputs;
   const totalVisits = numVehicles * serviceVisitsPerYear;
 
   const onsiteHoursLost = totalVisits * ONSITE_DOWNTIME_HOURS;
@@ -100,13 +106,25 @@ function calculateOnsite(inputs: CalcInputs, current: CalcResults): OnsiteResult
   const onsiteServiceCost = totalVisits * ONSITE_PRICE_PER_VISIT;
   const onsiteTotalCost = onsitePayrollCost + onsiteLostRevenue + onsiteServiceCost;
 
-  const netAnnualSavings = current.totalDowntimeCost - onsiteTotalCost;
+  const netAnnualSavings = (current.totalDowntimeCost + totalVisits * currentShopPricePerVisit) - onsiteTotalCost;
   const hoursRecovered = current.annualHoursLost - onsiteHoursLost;
-  const savingsPercent = current.totalDowntimeCost > 0
-    ? Math.round((netAnnualSavings / current.totalDowntimeCost) * 100)
+
+  // True Cost Per Visit (hard + soft)
+  const currentTrueCostPerVisit = currentShopPricePerVisit
+    + (inputs.hoursLostPerVisit * hourlyEmployeeCost)
+    + (inputs.hoursLostPerVisit * revenuePerVehicleHour);
+  const onsiteTrueCostPerVisit = ONSITE_PRICE_PER_VISIT
+    + (ONSITE_DOWNTIME_HOURS * hourlyEmployeeCost)
+    + (ONSITE_DOWNTIME_HOURS * revenuePerVehicleHour);
+  const savingsPerVisit = currentTrueCostPerVisit - onsiteTrueCostPerVisit;
+  const currentAnnualServiceCost = totalVisits * currentShopPricePerVisit;
+
+  const totalCurrentCost = current.totalDowntimeCost + currentAnnualServiceCost;
+  const savingsPercent = totalCurrentCost > 0
+    ? Math.round((netAnnualSavings / totalCurrentCost) * 100)
     : 0;
 
-  return { onsiteHoursLost, onsitePayrollCost, onsiteLostRevenue, onsiteServiceCost, onsiteTotalCost, netAnnualSavings, hoursRecovered, savingsPercent };
+  return { onsiteHoursLost, onsitePayrollCost, onsiteLostRevenue, onsiteServiceCost, onsiteTotalCost, netAnnualSavings, hoursRecovered, savingsPercent, currentTrueCostPerVisit, onsiteTrueCostPerVisit, savingsPerVisit, currentAnnualServiceCost };
 }
 
 // ─── Slider Input Component ───────────────────────────────────────────────────
@@ -330,9 +348,88 @@ interface ROIComparisonProps {
 
 function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps) {
   const firstName = leadName.split(" ")[0];
+  const fmt = (n: number) => n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  const totalVisits = inputs.numVehicles * inputs.serviceVisitsPerYear;
 
   return (
     <div className="animate-unlock space-y-4">
+
+      {/* ── True Cost Per Visit — the objection killer ── */}
+      <div className="relative rounded-2xl overflow-hidden border border-orange-500/30 p-5"
+        style={{ background: "linear-gradient(135deg, oklch(0.65 0.22 28 / 12%), oklch(0.65 0.22 28 / 5%))" }}>
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-500 via-orange-400 to-transparent" />
+
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-6 h-6 rounded-lg bg-orange-500/20 border border-orange-500/30 flex items-center justify-center">
+            <Calculator className="w-3.5 h-3.5 text-orange-400" />
+          </div>
+          <p className="text-[11px] font-semibold text-orange-400/80 uppercase tracking-widest">True Cost Per Visit — Hard + Soft</p>
+        </div>
+
+        {/* Per-visit breakdown grid */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          {/* Current shop */}
+          <div className="rounded-xl border border-white/8 p-3.5" style={{ background: "oklch(0.16 0.04 255 / 70%)" }}>
+            <p className="text-[10px] font-semibold text-orange-400/70 uppercase tracking-widest mb-2">Their Shop</p>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Invoice price</span>
+                <span className="text-white/70 font-medium">${fmt(inputs.currentShopPricePerVisit)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Employee time ({inputs.hoursLostPerVisit}h × ${inputs.hourlyEmployeeCost})</span>
+                <span className="text-white/70 font-medium">${fmt(inputs.hoursLostPerVisit * inputs.hourlyEmployeeCost)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Lost revenue ({inputs.hoursLostPerVisit}h × ${inputs.revenuePerVehicleHour})</span>
+                <span className="text-orange-400 font-medium">${fmt(inputs.hoursLostPerVisit * inputs.revenuePerVehicleHour)}</span>
+              </div>
+              <div className="h-px bg-white/10 my-1" />
+              <div className="flex justify-between">
+                <span className="text-xs font-bold text-white">True cost</span>
+                <span className="metric-number text-lg text-orange-400 leading-none">${fmt(onsite.currentTrueCostPerVisit)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Onsite Fleet */}
+          <div className="rounded-xl border border-green-500/25 p-3.5" style={{ background: "oklch(0.22 0.06 155 / 20%)" }}>
+            <p className="text-[10px] font-semibold text-green-400/70 uppercase tracking-widest mb-2">Onsite Fleet</p>
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Service price</span>
+                <span className="text-white/70 font-medium">$134.99</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Employee time (0.5h × ${inputs.hourlyEmployeeCost})</span>
+                <span className="text-white/70 font-medium">${fmt(0.5 * inputs.hourlyEmployeeCost)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-white/40">Lost revenue (0.5h × ${inputs.revenuePerVehicleHour})</span>
+                <span className="text-green-400/80 font-medium">${fmt(0.5 * inputs.revenuePerVehicleHour)}</span>
+              </div>
+              <div className="h-px bg-white/10 my-1" />
+              <div className="flex justify-between">
+                <span className="text-xs font-bold text-white">True cost</span>
+                <span className="metric-number text-lg text-green-400 leading-none">${fmt(onsite.onsiteTrueCostPerVisit)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Savings per visit callout */}
+        <div className="rounded-xl p-3 border border-green-500/25 bg-green-500/8 text-center">
+          <p className="text-xs text-white/50 mb-0.5">You save per visit</p>
+          <p className="metric-number text-3xl text-green-400 leading-none">${fmt(onsite.savingsPerVisit)}</p>
+          <p className="text-[11px] text-white/35 mt-1">
+            × {fmt(totalVisits)} annual visits = <span className="font-semibold text-green-300">${fmt(onsite.savingsPerVisit * totalVisits)}/yr</span> in true cost savings
+          </p>
+        </div>
+
+        <p className="text-[10px] text-white/25 text-center mt-3 leading-relaxed">
+          That "cheaper" ${inputs.currentShopPricePerVisit} oil change is actually costing you ${fmt(onsite.currentTrueCostPerVisit)} per visit when you count the clock.
+        </p>
+      </div>
 
       {/* Net savings hero card */}
       <div className="relative rounded-2xl overflow-hidden border border-green-500/40 p-6"
@@ -351,7 +448,7 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
             <p className="metric-number text-5xl text-green-400 leading-none">
               <AnimatedNumber value={Math.max(0, onsite.netAnnualSavings)} prefix="$" />
             </p>
-            <p className="text-xs text-white/40 mt-1.5">per year with Onsite Fleet mobile service</p>
+            <p className="text-xs text-white/40 mt-1.5">per year — hard costs + soft costs combined</p>
           </div>
           <div className="text-right shrink-0">
             <div className="inline-flex flex-col items-center px-3 py-2 rounded-xl border border-green-500/25 bg-green-500/10">
@@ -361,7 +458,7 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/8">
+        <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/8">
           <div>
             <p className="text-[10px] text-white/35 uppercase tracking-wider mb-0.5">Hours Recovered</p>
             <p className="metric-number text-xl text-white">
@@ -369,10 +466,12 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
             </p>
           </div>
           <div>
+            <p className="text-[10px] text-white/35 uppercase tracking-wider mb-0.5">Savings / Visit</p>
+            <p className="metric-number text-xl text-green-400">${fmt(onsite.savingsPerVisit)}</p>
+          </div>
+          <div>
             <p className="text-[10px] text-white/35 uppercase tracking-wider mb-0.5">Onsite Service Cost</p>
-            <p className="metric-number text-xl text-white">
-              <AnimatedNumber value={onsite.onsiteServiceCost} prefix="$" />
-            </p>
+            <p className="metric-number text-xl text-white">${fmt(onsite.onsiteServiceCost)}</p>
           </div>
         </div>
 
@@ -380,28 +479,28 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
           <div className="mt-4 p-3 rounded-xl bg-green-500/10 border border-green-500/20">
             <p className="text-xs text-green-300/80 leading-relaxed text-center">
               <span className="font-semibold text-green-300">
-                {firstName}, your fleet pays ${(onsite.onsiteServiceCost / 12).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                {firstName}, your fleet pays ${fmt(onsite.onsiteServiceCost / 12)}/mo
               </span>{" "}
-              for Onsite Fleet service and recovers{" "}
+              for Onsite Fleet and recovers{" "}
               <span className="font-semibold text-green-300">
-                ${(onsite.netAnnualSavings / 12).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                ${fmt(onsite.netAnnualSavings / 12)}/mo
               </span>{" "}
-              in downtime savings — a net gain every single month.
+              in total savings — a net gain every single month.
             </p>
           </div>
         )}
       </div>
 
-      {/* Side-by-side comparison table */}
+      {/* Side-by-side annual comparison table */}
       <div className="rounded-2xl border border-white/8 overflow-hidden" style={{ background: "oklch(0.19 0.035 255)" }}>
         <div className="flex items-center gap-2.5 px-5 py-4 border-b border-white/6">
           <BarChart3 className="w-4 h-4 text-orange-400" />
-          <h3 className="font-display font-bold text-base text-white">Side-by-Side Cost Comparison</h3>
+          <h3 className="font-display font-bold text-base text-white">Annual Cost Comparison</h3>
         </div>
 
         {/* Column headers */}
         <div className="grid grid-cols-3 gap-0 px-5 py-3 border-b border-white/6 bg-white/2">
-          <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Metric</p>
+          <p className="text-[10px] font-semibold text-white/30 uppercase tracking-widest">Line Item</p>
           <div className="text-center">
             <p className="text-[10px] font-semibold text-orange-400/70 uppercase tracking-widest">Current</p>
             <p className="text-[9px] text-white/20 uppercase tracking-wider">(Shop Drop-Off)</p>
@@ -412,61 +511,27 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
           </div>
         </div>
 
-        {/* Comparison rows */}
         {[
-          {
-            label: "Hours Lost / Visit",
-            current: `${inputs.hoursLostPerVisit} hrs`,
-            onsite: "~0.5 hrs",
-            highlight: false,
-          },
-          {
-            label: "Annual Hours Lost",
-            current: `${current.annualHoursLost.toLocaleString()} hrs`,
-            onsite: `${onsite.onsiteHoursLost.toLocaleString()} hrs`,
-            highlight: false,
-          },
-          {
-            label: "Annual Payroll Wasted",
-            current: `$${current.annualPayrollWasted.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            onsite: `$${onsite.onsitePayrollCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            highlight: false,
-          },
-          {
-            label: "Lost Revenue",
-            current: `$${current.estimatedLostRevenue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            onsite: `$${onsite.onsiteLostRevenue.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            highlight: false,
-          },
-          {
-            label: "Service Cost",
-            current: "Variable",
-            onsite: `$${onsite.onsiteServiceCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            highlight: false,
-          },
-          {
-            label: "Total Annual Cost",
-            current: `$${current.totalDowntimeCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            onsite: `$${onsite.onsiteTotalCost.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            highlight: true,
-          },
-        ].map((row, i) => (
+          { label: "Service Invoice Cost", current: `$${fmt(onsite.currentAnnualServiceCost)}`, onsite: `$${fmt(onsite.onsiteServiceCost)}`, sub: true },
+          { label: "Payroll Wasted", current: `$${fmt(current.annualPayrollWasted)}`, onsite: `$${fmt(onsite.onsitePayrollCost)}`, sub: true },
+          { label: "Lost Revenue", current: `$${fmt(current.estimatedLostRevenue)}`, onsite: `$${fmt(onsite.onsiteLostRevenue)}`, sub: true },
+          { label: "Total True Annual Cost", current: `$${fmt(current.totalDowntimeCost + onsite.currentAnnualServiceCost)}`, onsite: `$${fmt(onsite.onsiteTotalCost)}`, highlight: true },
+        ].map((row) => (
           <div
             key={row.label}
-            className={`grid grid-cols-3 gap-0 px-5 py-3 border-b border-white/4 last:border-0 ${row.highlight ? "bg-white/3" : ""}`}
+            className={`grid grid-cols-3 gap-0 px-5 py-3 border-b border-white/4 last:border-0 ${'highlight' in row && row.highlight ? "bg-white/3" : ""}`}
           >
-            <p className={`text-xs ${row.highlight ? "font-bold text-white" : "text-white/55"}`}>{row.label}</p>
-            <p className={`text-center text-xs font-semibold ${row.highlight ? "text-orange-400 text-sm" : "text-white/60"}`}>{row.current}</p>
-            <p className={`text-center text-xs font-semibold ${row.highlight ? "text-green-400 text-sm" : "text-green-400/70"}`}>{row.onsite}</p>
+            <p className={`text-xs ${'highlight' in row && row.highlight ? "font-bold text-white" : "text-white/50"}`}>{row.label}</p>
+            <p className={`text-center text-xs font-semibold ${'highlight' in row && row.highlight ? "text-orange-400" : "text-white/55"}`}>{row.current}</p>
+            <p className={`text-center text-xs font-semibold ${'highlight' in row && row.highlight ? "text-green-400" : "text-green-400/65"}`}>{row.onsite}</p>
           </div>
         ))}
 
-        {/* Net savings footer row */}
         <div className="grid grid-cols-3 gap-0 px-5 py-4 bg-green-500/8 border-t border-green-500/20">
           <p className="text-xs font-bold text-green-300 uppercase tracking-wider">Net Savings</p>
           <p className="text-center text-xs text-white/20">—</p>
           <p className="text-center text-sm font-bold text-green-400">
-            ${Math.max(0, onsite.netAnnualSavings).toLocaleString("en-US", { maximumFractionDigits: 0 })}/yr
+            ${fmt(Math.max(0, onsite.netAnnualSavings))}/yr
           </p>
         </div>
       </div>
@@ -474,16 +539,14 @@ function ROIComparison({ inputs, current, onsite, leadName }: ROIComparisonProps
       {/* Pricing transparency note */}
       <div className="rounded-xl p-4 border border-white/6 bg-white/2">
         <p className="text-[11px] text-white/35 leading-relaxed text-center">
-          Onsite Fleet pricing based on standard national rate of{" "}
-          <span className="text-white/55 font-semibold">$134.99/visit</span> (synthetic oil change, full inspection, Carfax reporting included).
-          Downtime reduction based on{" "}
-          <span className="text-white/55 font-semibold">~30-min onsite service</span> vs. traditional shop drop-off.
+          Onsite Fleet pricing: <span className="text-white/55 font-semibold">$134.99/visit</span> — synthetic oil change, full inspection, Carfax update included.
+          Onsite service time: <span className="text-white/55 font-semibold">~30 min</span> vs. your current {inputs.hoursLostPerVisit}-hour shop drop-off.
         </p>
       </div>
 
       {/* CTA */}
       <div className="rounded-xl p-5 border border-orange-500/20 text-center" style={{ background: "oklch(0.65 0.22 28 / 10%)" }}>
-        <p className="text-sm font-semibold text-white mb-1">Ready to recover your ${Math.max(0, onsite.netAnnualSavings).toLocaleString("en-US", { maximumFractionDigits: 0 })}?</p>
+        <p className="text-sm font-semibold text-white mb-1">Ready to recover your ${fmt(Math.max(0, onsite.netAnnualSavings))}?</p>
         <p className="text-xs text-white/45 mb-4 leading-relaxed">A fleet specialist will contact you within 1 business day to walk through your numbers and schedule a free onsite demo.</p>
         <a
           href="tel:+1-800-000-0000"
@@ -507,6 +570,7 @@ export default function Home() {
     serviceVisitsPerYear: 4,
     hoursLostPerVisit: 3,
     revenuePerVehicleHour: 85,
+    currentShopPricePerVisit: 90,
   });
 
   const [unlocked, setUnlocked] = useState(false);
@@ -642,6 +706,14 @@ export default function Home() {
               <SliderInput label="Average Service Visits Per Vehicle Annually" value={inputs.serviceVisitsPerYear} min={1} max={24} step={1} onChange={set("serviceVisitsPerYear")} hint="Oil changes, inspections, and preventive maintenance" delay={120} />
               <SliderInput label="Average Hours Lost Per Service Visit" value={inputs.hoursLostPerVisit} min={0.5} max={16} step={0.5} suffix=" hrs" onChange={set("hoursLostPerVisit")} hint="Time from drop-off to vehicle back in service (typical: 2–4 hrs)" delay={180} />
               <SliderInput label="Estimated Hourly Revenue Per Vehicle" value={inputs.revenuePerVehicleHour} min={10} max={500} step={5} prefix="$" onChange={set("revenuePerVehicleHour")} hint="Revenue your business generates per vehicle per hour of operation" delay={240} />
+
+              {/* Divider before hard cost input */}
+              <div className="relative">
+                <div className="h-px bg-white/8" />
+                <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 px-3 text-[10px] font-semibold text-white/30 uppercase tracking-widest" style={{ background: "oklch(0.19 0.035 255)" }}>Hard Cost Comparison</span>
+              </div>
+
+              <SliderInput label="What You Currently Pay Per Service Visit" value={inputs.currentShopPricePerVisit} min={20} max={400} step={5} prefix="$" onChange={set("currentShopPricePerVisit")} hint="Your current shop invoice price per oil change / service visit" delay={300} />
             </div>
 
             {/* What you'll see after unlocking */}
@@ -651,12 +723,13 @@ export default function Home() {
                   <TrendingUp className="w-4 h-4 text-green-400" />
                   <p className="text-xs font-semibold text-green-400/80 uppercase tracking-wider">What you'll unlock</p>
                 </div>
-                <div className="space-y-2">
+                  <div className="space-y-2">
                   {[
                     "Your exact lost revenue figure",
                     "Total annual downtime cost",
+                    "True cost per visit (hard + soft)",
                     "Side-by-side ROI comparison",
-                    `Your net savings with Onsite Fleet`,
+                    `Your net annual savings with Onsite Fleet`,
                   ].map((item) => (
                     <div key={item} className="flex items-center gap-2">
                       <div className="w-1.5 h-1.5 rounded-full bg-green-400/60 shrink-0" />
