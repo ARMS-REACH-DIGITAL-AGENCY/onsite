@@ -2,11 +2,12 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./productionPolish.css";
+import "./footerAndDrawerFix.css";
 import { installOnsiteEnhancements } from "./onsiteEnhancements";
 
 const mobileCss = document.createElement("link");
 mobileCss.rel = "stylesheet";
-mobileCss.href = "/mobileCompatibility.css?v=20260716-final";
+mobileCss.href = "/mobileCompatibility.css?v=20260716-final2";
 document.head.appendChild(mobileCss);
 
 createRoot(document.getElementById("root")!).render(<App />);
