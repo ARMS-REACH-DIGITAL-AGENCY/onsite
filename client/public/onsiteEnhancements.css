@@ -1,1 +1,25 @@
-:root{--onsite-orange:#f3893b;--onsite-orange-rgb:243,137,59}.onsite-brand-logo{display:block;width:184px;height:auto;object-fit:contain}.onsite-footer-logo{display:block;width:82px;height:auto;object-fit:contain}.onsite-pete-strip{position:relative;margin:56px auto 30px;min-height:132px;padding:18px 24px 18px 158px;border:1px solid rgba(var(--onsite-orange-rgb),.5);border-radius:18px;background:linear-gradient(135deg,rgba(var
+:root {
+  --onsite-orange: #f3893b;
+  --onsite-orange-rgb: 243, 137, 59;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#onsite-brand-lockup {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.onsite-brand-logo {
+  display: block;
+  width: 184px;
+  height: auto;
+  object-fit: contain;
+}
+
+.onsite-footer-logo {
+  display: block;
+  width: 82
