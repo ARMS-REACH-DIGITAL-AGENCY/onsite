@@ -1,0 +1,174 @@
+@media (max-width: 640px) {
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  header > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+  }
+
+  #onsite-brand-lockup {
+    min-width: 0 !important;
+    flex: 0 1 auto !important;
+  }
+
+  .onsite-brand-logo {
+    width: 138px !important;
+    max-width: 42vw !important;
+    height: auto !important;
+  }
+
+  #onsite-mobile-menu-button {
+    display: inline-flex !important;
+    flex: 0 0 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin-left: auto !important;
+    padding: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  #onsite-mobile-menu-button span {
+    display: block !important;
+    width: 28px !important;
+    height: 3px !important;
+    border-radius: 999px !important;
+    background: #fff !important;
+  }
+
+  #onsite-pete-strip.onsite-pete-strip {
+    position: relative !important;
+    display: block !important;
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    min-height: 230px !important;
+    margin: 30px 12px 32px !important;
+    padding: 24px 18px 24px 145px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+    border-radius: 22px !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-avatar {
+    position: absolute !important;
+    left: 16px !important;
+    bottom: -16px !important;
+    width: 118px !important;
+    height: auto !important;
+    max-height: 250px !important;
+    object-fit: contain !important;
+    object-position: center bottom !important;
+    z-index: 2 !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    align-self: auto !important;
+    grid-column: auto !important;
+    box-sizing: border-box !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy strong,
+  #onsite-pete-strip .onsite-pete-copy span {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: none !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy strong {
+    margin: 0 0 10px !important;
+    font-size: 18px !important;
+    line-height: 1.28 !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy span {
+    margin: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  .onsite-loader-card {
+    width: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    min-height: 470px !important;
+    padding: 20px 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .onsite-loader-stage {
+    display: grid !important;
+    grid-template-columns: 120px minmax(0, 1fr) !important;
+    gap: 10px !important;
+    align-items: end !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .onsite-loader-stage .onsite-pete-large {
+    width: 112px !important;
+    height: auto !important;
+    max-height: 225px !important;
+    object-fit: contain !important;
+  }
+
+  .onsite-road {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .onsite-brand-logo {
+    width: 124px !important;
+  }
+
+  #onsite-pete-strip.onsite-pete-strip {
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    min-height: 218px !important;
+    margin-left: 8px !important;
+    margin-right: 8px !important;
+    padding: 20px 14px 20px 126px !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-avatar {
+    left: 10px !important;
+    width: 102px !important;
+    max-height: 225px !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy strong {
+    font-size: 16px !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy span {
+    font-size: 13px !important;
+  }
+}
