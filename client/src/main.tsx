@@ -5,11 +5,15 @@ import "./productionPolish.css";
 import "./footerAndDrawerFix.css";
 import { installOnsiteEnhancements } from "./onsiteEnhancements";
 
-const mobileCss = document.createElement("link");
-mobileCss.rel = "stylesheet";
-mobileCss.href = "/mobileCompatibility.css?v=20260716-final2";
-document.head.appendChild(mobileCss);
-
 createRoot(document.getElementById("root")!).render(<App />);
 
-window.requestAnimationFrame(() => installOnsiteEnhancements());
+window.requestAnimationFrame(() => {
+  installOnsiteEnhancements();
+
+  document.getElementById("onsite-mobile-compatibility-css")?.remove();
+  const mobileCss = document.createElement("link");
+  mobileCss.id = "onsite-mobile-compatibility-css";
+  mobileCss.rel = "stylesheet";
+  mobileCss.href = "/mobileCompatibility.css?v=20260726-final3";
+  document.head.appendChild(mobileCss);
+});
