@@ -1,0 +1,148 @@
+:root {
+  --onsite-navy: #002549;
+  --onsite-yellow: #EFC02E;
+  --onsite-charcoal: #1A1A1A;
+  --onsite-white: #FFFFFF;
+
+  /* Existing app/enhancement aliases */
+  --onsite-orange: #EFC02E;
+  --onsite-orange-rgb: 239, 192, 46;
+  --onsite-polish-orange: #EFC02E;
+
+  /* Tailwind/theme tokens */
+  --background: #002549;
+  --foreground: #FFFFFF;
+  --card: #1A1A1A;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
+  --primary: #EFC02E;
+  --primary-foreground: #002549;
+  --secondary: #123A60;
+  --secondary-foreground: #FFFFFF;
+  --muted: #123A60;
+  --muted-foreground: rgba(255, 255, 255, 0.68);
+  --accent: #EFC02E;
+  --accent-foreground: #002549;
+  --ring: #EFC02E;
+
+  /* Re-map the old orange utility palette to Onsite yellow. */
+  --color-orange-300: #F5D76D;
+  --color-orange-400: #EFC02E;
+  --color-orange-500: #EFC02E;
+  --color-orange-600: #D7A915;
+}
+
+html,
+body,
+#root {
+  background: #002549 !important;
+}
+
+body {
+  color: #FFFFFF;
+}
+
+/* Main app surfaces */
+.min-h-screen {
+  background: #002549 !important;
+}
+
+header[class*="backdrop-blur"] {
+  background: rgba(0, 37, 73, 0.96) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
+}
+
+section.relative.pt-16 {
+  background: #002549 !important;
+}
+
+[style*="oklch(0.19 0.035 255)"],
+[style*="oklch(0.16 0.04 255)"] {
+  background: #1A1A1A !important;
+}
+
+[style*="oklch(0.14 0.035 255)"],
+[style*="oklch(0.12 0.04 255)"] {
+  background: #002549 !important;
+}
+
+/* Brand accent text */
+h1 span[style*="oklch(0.65 0.22 28)"],
+h2 span[style*="oklch(0.65 0.22 28)"] {
+  color: #EFC02E !important;
+}
+
+/* Primary CTAs */
+.btn-glow,
+.btn-glow[style] {
+  background: #EFC02E !important;
+  color: #002549 !important;
+  box-shadow: 0 0 20px rgba(239, 192, 46, 0.30), 0 4px 16px rgba(0, 0, 0, 0.30) !important;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 30px rgba(239, 192, 46, 0.42), 0 8px 24px rgba(0, 0, 0, 0.38) !important;
+}
+
+.btn-glow svg {
+  color: #002549 !important;
+}
+
+/* Inputs and calculator controls */
+.calc-input:focus {
+  border-color: rgba(239, 192, 46, 0.80) !important;
+  box-shadow: 0 0 0 1px rgba(239, 192, 46, 0.18) !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  background: #EFC02E !important;
+  box-shadow: 0 0 0 3px rgba(239, 192, 46, 0.24) !important;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 6px rgba(239, 192, 46, 0.28) !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: #EFC02E !important;
+}
+
+/* Enhanced production header / drawer / footer */
+#onsite-mobile-menu-button span {
+  background: #FFFFFF !important;
+}
+
+#onsite-mobile-menu,
+.onsite-mobile-menu,
+.onsite-drawer,
+.onsite-drawer-panel {
+  background: #002549 !important;
+}
+
+#onsite-pete-strip.onsite-pete-strip {
+  border-color: rgba(239, 192, 46, 0.55) !important;
+  background: linear-gradient(135deg, rgba(239, 192, 46, 0.10), rgba(0, 37, 73, 0.94)) !important;
+}
+
+/* Any old orange-labelled custom UI should inherit the official yellow. */
+.onsite-kicker,
+.onsite-accent,
+.onsite-highlight,
+.onsite-mobile-menu a:hover,
+.onsite-drawer a:hover {
+  color: #EFC02E !important;
+}
+
+/* Footer and structural dark surfaces */
+footer,
+.onsite-footer {
+  border-color: rgba(255, 255, 255, 0.10) !important;
+  background: #002549 !important;
+}
+
+/* Accessibility: yellow buttons use navy copy for strong contrast. */
+.bg-orange-500,
+.bg-orange-400 {
+  color: #002549 !important;
+}
