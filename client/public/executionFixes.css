@@ -1,0 +1,166 @@
+/* Final production overrides for official Onsite branding and interaction safety. */
+:root {
+  --onsite-navy: #002549;
+  --onsite-yellow: #EFC02E;
+  --onsite-charcoal: #1A1A1A;
+  --onsite-white: #FFFFFF;
+}
+
+header {
+  background: #002549 !important;
+  background-color: #002549 !important;
+  opacity: 1 !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
+  pointer-events: auto !important;
+}
+
+#onsite-brand-lockup,
+#onsite-brand-lockup img,
+.onsite-brand-logo,
+.onsite-footer-logo,
+.onsite-loader-logo,
+.onsite-mobile-drawer-logo {
+  background: transparent !important;
+}
+
+.onsite-brand-logo {
+  display: block !important;
+  width: auto !important;
+  height: 58px !important;
+  max-width: 220px !important;
+  object-fit: contain !important;
+}
+
+.onsite-footer-logo,
+.onsite-mobile-drawer-logo,
+.onsite-loader-logo {
+  object-fit: contain !important;
+}
+
+[class*="text-orange-"] {
+  color: #EFC02E !important;
+}
+
+[class*="border-orange-"] {
+  border-color: #EFC02E !important;
+}
+
+.bg-orange-400,
+.bg-orange-500,
+.bg-orange-600 {
+  background-color: #EFC02E !important;
+}
+
+.btn-glow,
+.onsite-booking-primary,
+.onsite-mobile-nav-primary {
+  background: #EFC02E !important;
+  color: #002549 !important;
+  border-color: #EFC02E !important;
+}
+
+.btn-glow svg,
+.onsite-booking-primary svg,
+.onsite-mobile-nav-primary svg {
+  color: #002549 !important;
+  stroke: currentColor !important;
+}
+
+input[type="range"] {
+  accent-color: #EFC02E !important;
+  pointer-events: auto !important;
+  touch-action: pan-y !important;
+  position: relative !important;
+  z-index: 2 !important;
+  cursor: pointer !important;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  background: #EFC02E !important;
+  border: 2px solid #002549 !important;
+  box-shadow: 0 0 0 3px rgba(239, 192, 46, 0.25) !important;
+  cursor: grab !important;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  cursor: grabbing !important;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: #EFC02E !important;
+  border: 2px solid #002549 !important;
+  box-shadow: 0 0 0 3px rgba(239, 192, 46, 0.25) !important;
+  cursor: grab !important;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  pointer-events: auto !important;
+}
+
+#onsite-mobile-menu-overlay:not(.is-open) {
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+#onsite-mobile-menu-overlay.is-open {
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
+
+/* The original injected header CTA is intentionally hidden; the replacement sits in the result flow. */
+#onsite-top-unlock {
+  display: none !important;
+}
+
+#onsite-inline-unlock {
+  width: 100% !important;
+  min-height: 52px !important;
+  margin: 10px 0 12px !important;
+  border: 1px solid #EFC02E !important;
+  border-radius: 12px !important;
+  background: #EFC02E !important;
+  color: #002549 !important;
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.055em !important;
+  text-transform: uppercase !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 22px rgba(239, 192, 46, 0.18) !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+#onsite-inline-unlock:hover,
+#onsite-inline-unlock:focus-visible {
+  filter: brightness(1.05) !important;
+  outline: 3px solid rgba(239, 192, 46, 0.25) !important;
+  outline-offset: 2px !important;
+}
+
+@media (max-width: 767px) {
+  header {
+    background: #002549 !important;
+  }
+
+  .onsite-brand-logo {
+    height: 48px !important;
+    max-width: 185px !important;
+  }
+
+  #onsite-inline-unlock {
+    min-height: 56px !important;
+    font-size: 13px !important;
+  }
+}
