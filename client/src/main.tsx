@@ -16,4 +16,11 @@ window.requestAnimationFrame(() => {
   mobileCss.rel = "stylesheet";
   mobileCss.href = "/mobileCompatibility.css?v=20260726-final3";
   document.head.appendChild(mobileCss);
+
+  document.getElementById("onsite-corporate-theme-css")?.remove();
+  const corporateTheme = document.createElement("link");
+  corporateTheme.id = "onsite-corporate-theme-css";
+  corporateTheme.rel = "stylesheet";
+  corporateTheme.href = "/corporateTheme.css?v=20260811-brand1";
+  document.head.appendChild(corporateTheme);
 });
