@@ -22,7 +22,7 @@ window.requestAnimationFrame(() => {
   const corporateTheme = document.createElement("link");
   corporateTheme.id = "onsite-corporate-theme-css";
   corporateTheme.rel = "stylesheet";
-  corporateTheme.href = "/corporateTheme.css?v=20260811-brand2";
+  corporateTheme.href = "/corporateTheme.css?v=20260811-exec1";
   document.head.appendChild(corporateTheme);
 
   applyOfficialOnsiteTheme();
