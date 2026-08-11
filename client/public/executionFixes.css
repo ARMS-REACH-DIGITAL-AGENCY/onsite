@@ -16,21 +16,36 @@ header {
   pointer-events: auto !important;
 }
 
-#onsite-brand-lockup,
+#onsite-brand-lockup {
+  flex: 0 0 auto !important;
+  width: 180px !important;
+  min-width: 180px !important;
+  height: 64px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
 #onsite-brand-lockup img,
 .onsite-brand-logo,
 .onsite-footer-logo,
 .onsite-loader-logo,
 .onsite-mobile-drawer-logo {
   background: transparent !important;
+  filter: none !important;
 }
 
 .onsite-brand-logo {
   display: block !important;
-  width: auto !important;
-  height: 58px !important;
-  max-width: 220px !important;
+  width: 170px !important;
+  height: auto !important;
+  max-width: 170px !important;
+  max-height: 62px !important;
   object-fit: contain !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .onsite-footer-logo,
@@ -55,8 +70,12 @@ header {
 
 .btn-glow,
 .onsite-booking-primary,
-.onsite-mobile-nav-primary {
+.onsite-mobile-nav-primary,
+#onsite-mobile-menu-overlay .onsite-mobile-nav-primary,
+.onsite-mobile-drawer .onsite-mobile-nav-primary,
+a.onsite-mobile-nav-item.onsite-mobile-nav-primary {
   background: #EFC02E !important;
+  background-color: #EFC02E !important;
   color: #002549 !important;
   border-color: #EFC02E !important;
 }
@@ -114,7 +133,6 @@ textarea {
   visibility: visible !important;
 }
 
-/* The original injected header CTA is intentionally hidden; the replacement sits in the result flow. */
 #onsite-top-unlock {
   display: none !important;
 }
@@ -154,9 +172,17 @@ textarea {
     background: #002549 !important;
   }
 
+  #onsite-brand-lockup {
+    width: 150px !important;
+    min-width: 150px !important;
+    height: 64px !important;
+  }
+
   .onsite-brand-logo {
-    height: 48px !important;
-    max-width: 185px !important;
+    width: 145px !important;
+    height: auto !important;
+    max-width: 145px !important;
+    max-height: 58px !important;
   }
 
   #onsite-inline-unlock {

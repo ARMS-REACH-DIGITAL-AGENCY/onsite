@@ -1,16 +1,38 @@
-const OFFICIAL_LOGO_SRC = "/assets/onsite_logo_official.png?v=20260811-official1";
+const OFFICIAL_LOGO_SRC = "/assets/onsite_logo_official.png?v=20260811-final4";
 const BRAND_NAVY = "#002549";
 const BRAND_YELLOW = "#EFC02E";
 const BRAND_YELLOW_RGB = "239, 192, 46";
+const PHONE_HREF = "tel:+16029053777";
 
 function useOfficialLogo() {
   document.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
     const src = img.getAttribute("src") || "";
     const brandedClass = /onsite-(brand|footer|loader|mobile-drawer)-logo/.test(String(img.className));
-    if (brandedClass || src.includes("/assets/onsite_logo.png") || src.includes("/assets/onsite_logo.svg")) {
-      if (!src.includes("onsite_logo_official.png")) img.src = OFFICIAL_LOGO_SRC;
+    if (
+      brandedClass ||
+      src.includes("/assets/onsite_logo.png") ||
+      src.includes("/assets/onsite_logo.svg") ||
+      src.includes("/assets/onsite_logo_official.png")
+    ) {
+      if (src !== OFFICIAL_LOGO_SRC) img.src = OFFICIAL_LOGO_SRC;
       img.alt = "OnSite Fleet & Auto Care";
+      img.decoding = "async";
     }
+  });
+}
+
+function fixPhoneLinks() {
+  document.querySelectorAll<HTMLAnchorElement>('a[href^="tel:"]').forEach((link) => {
+    if (link.getAttribute("href") !== PHONE_HREF) link.setAttribute("href", PHONE_HREF);
+  });
+}
+
+function forceMobilePrimary() {
+  document.querySelectorAll<HTMLElement>(".onsite-mobile-nav-primary").forEach((node) => {
+    node.style.setProperty("background", BRAND_YELLOW, "important");
+    node.style.setProperty("background-color", BRAND_YELLOW, "important");
+    node.style.setProperty("border-color", BRAND_YELLOW, "important");
+    node.style.setProperty("color", BRAND_NAVY, "important");
   });
 }
 
@@ -163,6 +185,8 @@ function installInlineUnlock() {
 function runExecutionFixes() {
   forceHeaderSurface();
   useOfficialLogo();
+  fixPhoneLinks();
+  forceMobilePrimary();
   applyBrandColor();
   restoreInteractiveControls();
   installInlineUnlock();
@@ -172,8 +196,8 @@ export function applyExecutionFixes() {
   runExecutionFixes();
 
   let queued = false;
-  const observer = new MutationObserver(() => {
-    if (queued) return;
+  const observer = new MutationObserver((mutations) => {
+    if (!mutations.some((mutation) => mutation.addedNodes.length > 0) || queued) return;
     queued = true;
     window.requestAnimationFrame(() => {
       queued = false;
@@ -181,6 +205,4 @@ export function applyExecutionFixes() {
     });
   });
   observer.observe(document.body, { childList: true, subtree: true });
-
-  window.addEventListener("resize", runExecutionFixes, { passive: true });
 }
