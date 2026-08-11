@@ -22,8 +22,15 @@ window.requestAnimationFrame(() => {
   const corporateTheme = document.createElement("link");
   corporateTheme.id = "onsite-corporate-theme-css";
   corporateTheme.rel = "stylesheet";
-  corporateTheme.href = "/corporateTheme.css?v=20260811-exec1";
+  corporateTheme.href = "/corporateTheme.css?v=20260811-exec2";
   document.head.appendChild(corporateTheme);
+
+  document.getElementById("onsite-execution-fixes-css")?.remove();
+  const executionFixes = document.createElement("link");
+  executionFixes.id = "onsite-execution-fixes-css";
+  executionFixes.rel = "stylesheet";
+  executionFixes.href = "/executionFixes.css?v=20260811-exec2";
+  document.head.appendChild(executionFixes);
 
   applyOfficialOnsiteTheme();
 });
