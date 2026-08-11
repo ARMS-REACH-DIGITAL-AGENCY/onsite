@@ -5,6 +5,7 @@ import "./productionPolish.css";
 import "./footerAndDrawerFix.css";
 import { installOnsiteEnhancements } from "./onsiteEnhancements";
 import { applyOfficialOnsiteTheme } from "./corporateTheme";
+import { applyExecutionFixes } from "./executionFixes";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
@@ -22,15 +23,16 @@ window.requestAnimationFrame(() => {
   const corporateTheme = document.createElement("link");
   corporateTheme.id = "onsite-corporate-theme-css";
   corporateTheme.rel = "stylesheet";
-  corporateTheme.href = "/corporateTheme.css?v=20260811-exec2";
+  corporateTheme.href = "/corporateTheme.css?v=20260811-exec3";
   document.head.appendChild(corporateTheme);
 
   document.getElementById("onsite-execution-fixes-css")?.remove();
   const executionFixes = document.createElement("link");
   executionFixes.id = "onsite-execution-fixes-css";
   executionFixes.rel = "stylesheet";
-  executionFixes.href = "/executionFixes.css?v=20260811-exec2";
+  executionFixes.href = "/executionFixes.css?v=20260811-exec3";
   document.head.appendChild(executionFixes);
 
   applyOfficialOnsiteTheme();
+  applyExecutionFixes();
 });
