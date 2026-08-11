@@ -3,13 +3,9 @@
   --onsite-yellow: #EFC02E;
   --onsite-charcoal: #1A1A1A;
   --onsite-white: #FFFFFF;
-
-  /* Existing app/enhancement aliases */
   --onsite-orange: #EFC02E;
   --onsite-orange-rgb: 239, 192, 46;
   --onsite-polish-orange: #EFC02E;
-
-  /* Tailwind/theme tokens */
   --background: #002549;
   --foreground: #FFFFFF;
   --card: #1A1A1A;
@@ -25,8 +21,6 @@
   --accent: #EFC02E;
   --accent-foreground: #002549;
   --ring: #EFC02E;
-
-  /* Re-map the old orange utility palette to Onsite yellow. */
   --color-orange-300: #F5D76D;
   --color-orange-400: #EFC02E;
   --color-orange-500: #EFC02E;
@@ -35,7 +29,8 @@
 
 html,
 body,
-#root {
+#root,
+.min-h-screen {
   background: #002549 !important;
 }
 
@@ -43,14 +38,25 @@ body {
   color: #FFFFFF;
 }
 
-/* Main app surfaces */
-.min-h-screen {
+/* Header must be an opaque corporate-navy bar, never glass/transparent. */
+header,
+header[class*="backdrop-blur"],
+header[class*="bg-"] {
   background: #002549 !important;
+  background-color: #002549 !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
 }
 
-header[class*="backdrop-blur"] {
-  background: rgba(0, 37, 73, 0.96) !important;
-  border-color: rgba(255, 255, 255, 0.10) !important;
+header::before,
+header::after {
+  background: transparent !important;
+}
+
+header > div {
+  background: transparent !important;
 }
 
 section.relative.pt-16 {
@@ -67,7 +73,19 @@ section.relative.pt-16 {
   background: #002549 !important;
 }
 
-/* Brand accent text */
+/* Official yellow replaces every legacy orange utility used by this app. */
+[class*="text-orange-"] {
+  color: #EFC02E !important;
+}
+
+[class*="border-orange-"] {
+  border-color: rgba(239, 192, 46, 0.55) !important;
+}
+
+[class*="bg-orange-"]:not(.btn-glow) {
+  background-color: rgba(239, 192, 46, 0.16) !important;
+}
+
 h1 span[style*="oklch(0.65 0.22 28)"],
 h2 span[style*="oklch(0.65 0.22 28)"] {
   color: #EFC02E !important;
@@ -89,7 +107,61 @@ h2 span[style*="oklch(0.65 0.22 28)"] {
   color: #002549 !important;
 }
 
-/* Inputs and calculator controls */
+/* Remove the old small header-level unlock button. The primary gate now sits in-flow. */
+#onsite-top-unlock {
+  display: none !important;
+}
+
+#onsite-inline-unlock {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 192, 46, 0.85);
+  background: #EFC02E;
+  color: #002549;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.065em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
+}
+
+#onsite-inline-unlock:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.34);
+}
+
+#onsite-inline-unlock:active {
+  transform: translateY(0);
+}
+
+#onsite-inline-unlock:focus-visible {
+  outline: 3px solid rgba(239, 192, 46, 0.42);
+  outline-offset: 3px;
+}
+
+/* Inputs and calculator controls remain fully interactive. */
+input[type="range"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  touch-action: pan-y !important;
+}
+
+.calc-input,
+button,
+a {
+  pointer-events: auto;
+}
+
 .calc-input:focus {
   border-color: rgba(239, 192, 46, 0.80) !important;
   box-shadow: 0 0 0 1px rgba(239, 192, 46, 0.18) !important;
@@ -108,7 +180,6 @@ input[type="range"]::-moz-range-thumb {
   background: #EFC02E !important;
 }
 
-/* Enhanced production header / drawer / footer */
 #onsite-mobile-menu-button span {
   background: #FFFFFF !important;
 }
@@ -116,7 +187,8 @@ input[type="range"]::-moz-range-thumb {
 #onsite-mobile-menu,
 .onsite-mobile-menu,
 .onsite-drawer,
-.onsite-drawer-panel {
+.onsite-drawer-panel,
+.onsite-mobile-drawer {
   background: #002549 !important;
 }
 
@@ -125,7 +197,6 @@ input[type="range"]::-moz-range-thumb {
   background: linear-gradient(135deg, rgba(239, 192, 46, 0.10), rgba(0, 37, 73, 0.94)) !important;
 }
 
-/* Any old orange-labelled custom UI should inherit the official yellow. */
 .onsite-kicker,
 .onsite-accent,
 .onsite-highlight,
@@ -134,14 +205,21 @@ input[type="range"]::-moz-range-thumb {
   color: #EFC02E !important;
 }
 
-/* Footer and structural dark surfaces */
+/* Keep the actual uploaded transparent logo clean and unaltered. */
+.onsite-brand-logo,
+.onsite-footer-logo,
+.onsite-mobile-drawer-logo,
+.onsite-loader-logo {
+  object-fit: contain !important;
+  filter: none !important;
+}
+
 footer,
 .onsite-footer {
   border-color: rgba(255, 255, 255, 0.10) !important;
   background: #002549 !important;
 }
 
-/* Accessibility: yellow buttons use navy copy for strong contrast. */
 .bg-orange-500,
 .bg-orange-400 {
   color: #002549 !important;
