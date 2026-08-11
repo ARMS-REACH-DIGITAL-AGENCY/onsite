@@ -4,6 +4,7 @@ import "./index.css";
 import "./productionPolish.css";
 import "./footerAndDrawerFix.css";
 import { installOnsiteEnhancements } from "./onsiteEnhancements";
+import { applyOfficialOnsiteTheme } from "./corporateTheme";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
@@ -21,6 +22,8 @@ window.requestAnimationFrame(() => {
   const corporateTheme = document.createElement("link");
   corporateTheme.id = "onsite-corporate-theme-css";
   corporateTheme.rel = "stylesheet";
-  corporateTheme.href = "/corporateTheme.css?v=20260811-brand1";
+  corporateTheme.href = "/corporateTheme.css?v=20260811-brand2";
   document.head.appendChild(corporateTheme);
+
+  applyOfficialOnsiteTheme();
 });
