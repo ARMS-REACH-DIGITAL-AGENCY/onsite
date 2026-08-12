@@ -9,12 +9,14 @@ import { applyExecutionFixes } from "./executionFixes";
 const OFFICIAL_LOGO_SRC = "/assets/onsite_logo_official.png?v=20260811-final4";
 const FLEET_REVIEW_CALENDAR_URL =
   "https://api.armsreachdigital.com/widget/bookings/pete-defleet-guy-personal-calendar-fceb7-oda";
+const FLEET_MAINTENANCE_CALENDAR_URL =
+  "https://api.armsreachdigital.com/widget/booking/vHMGXlJJ2Qom7wye7Pvz";
 
 createRoot(document.getElementById("root")!).render(<App />);
 
-function installFleetReviewCalendarLink() {
-  if (document.documentElement.dataset.onsiteFleetReviewLinkWired === "true") return;
-  document.documentElement.dataset.onsiteFleetReviewLinkWired = "true";
+function installFleetCalendarLinks() {
+  if (document.documentElement.dataset.onsiteFleetCalendarLinksWired === "true") return;
+  document.documentElement.dataset.onsiteFleetCalendarLinksWired = "true";
 
   document.addEventListener(
     "click",
@@ -24,15 +26,26 @@ function installFleetReviewCalendarLink() {
       if (!control) return;
 
       const label = (control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+
       const isFleetReviewAction =
         /schedule\s+(?:a\s+)?20[-\s]?minute\s+meeting/.test(label) ||
         /20[-\s]?min(?:ute)?\b.*(?:fleet\s+)?review/.test(label);
 
-      if (!isFleetReviewAction) return;
+      const isMaintenanceAction =
+        /schedule\s+fleet\s+maintenance/.test(label) ||
+        /fleet\s+maintenance\s+today/.test(label);
+
+      const url = isFleetReviewAction
+        ? FLEET_REVIEW_CALENDAR_URL
+        : isMaintenanceAction
+          ? FLEET_MAINTENANCE_CALENDAR_URL
+          : "";
+
+      if (!url) return;
 
       event.preventDefault();
       event.stopImmediatePropagation();
-      window.open(FLEET_REVIEW_CALENDAR_URL, "_blank", "noopener,noreferrer");
+      window.open(url, "_blank", "noopener,noreferrer");
     },
     true
   );
@@ -83,7 +96,7 @@ function primeOfficialHeaderLogo() {
   logo.src = OFFICIAL_LOGO_SRC;
 }
 
-installFleetReviewCalendarLink();
+installFleetCalendarLinks();
 
 window.requestAnimationFrame(() => {
   installEnhancementsWithoutLegacyObserver();
