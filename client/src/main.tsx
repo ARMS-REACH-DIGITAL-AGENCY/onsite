@@ -7,8 +7,36 @@ import { installOnsiteEnhancements } from "./onsiteEnhancements";
 import { applyExecutionFixes } from "./executionFixes";
 
 const OFFICIAL_LOGO_SRC = "/assets/onsite_logo_official.png?v=20260811-final4";
+const FLEET_REVIEW_CALENDAR_URL =
+  "https://api.armsreachdigital.com/widget/bookings/pete-defleet-guy-personal-calendar-fceb7-oda";
 
 createRoot(document.getElementById("root")!).render(<App />);
+
+function installFleetReviewCalendarLink() {
+  if (document.documentElement.dataset.onsiteFleetReviewLinkWired === "true") return;
+  document.documentElement.dataset.onsiteFleetReviewLinkWired = "true";
+
+  document.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target as Element | null;
+      const control = target?.closest("button,a,[role='button']") as HTMLElement | null;
+      if (!control) return;
+
+      const label = (control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+      const isFleetReviewAction =
+        /schedule\s+(?:a\s+)?20[-\s]?minute\s+meeting/.test(label) ||
+        /20[-\s]?min(?:ute)?\b.*(?:fleet\s+)?review/.test(label);
+
+      if (!isFleetReviewAction) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      window.open(FLEET_REVIEW_CALENDAR_URL, "_blank", "noopener,noreferrer");
+    },
+    true
+  );
+}
 
 function installEnhancementsWithoutLegacyObserver() {
   const NativeMutationObserver = window.MutationObserver;
@@ -54,6 +82,8 @@ function primeOfficialHeaderLogo() {
 
   logo.src = OFFICIAL_LOGO_SRC;
 }
+
+installFleetReviewCalendarLink();
 
 window.requestAnimationFrame(() => {
   installEnhancementsWithoutLegacyObserver();
