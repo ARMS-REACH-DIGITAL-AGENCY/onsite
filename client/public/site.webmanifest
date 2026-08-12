@@ -1,0 +1,17 @@
+{
+  "name": "Onsite Fleet & Auto Care",
+  "short_name": "Onsite Fleet",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#002549",
+  "theme_color": "#002549",
+  "icons": [
+    {
+      "src": "/assets/onsite_favicon.jpg?v=20260812",
+      "sizes": "any",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
