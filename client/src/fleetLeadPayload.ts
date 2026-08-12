@@ -66,19 +66,15 @@ export function installFleetLeadPayloadEnhancer() {
 
     try {
       const payload = JSON.parse(init.body) as Record<string, unknown>;
-      if (!payload.calculator) {
-        const calculator = collectCalculatorPayload();
-        if (calculator) {
-          return nativeFetch(input, {
-            ...init,
-            body: JSON.stringify({ ...payload, calculator }),
-          });
-        }
-      }
-    } catch {
-      // Preserve the original request if the body is not JSON.
-    }
+      const calculator = payload.calculator || collectCalculatorPayload();
+      const nextBody = calculator ? JSON.stringify({ ...payload, calculator }) : init.body;
 
-    return nativeFetch(input, init);
+      return nativeFetch("/api/fleet-lead-assigned", {
+        ...init,
+        body: nextBody,
+      });
+    } catch {
+      return nativeFetch("/api/fleet-lead-assigned", init);
+    }
   }) as typeof window.fetch;
 }
