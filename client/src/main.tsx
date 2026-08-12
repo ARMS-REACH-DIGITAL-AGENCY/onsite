@@ -16,6 +16,20 @@ const FLEET_MAINTENANCE_CALENDAR_URL =
 installFleetLeadPayloadEnhancer();
 createRoot(document.getElementById("root")!).render(<App />);
 
+function standardizeFleetReviewCtas() {
+  document.querySelectorAll<HTMLElement>("a,button,[role='button']").forEach((control) => {
+    const text = (control.textContent || "").replace(/\s+/g, " ").trim();
+    if (!/fleet\s+review/i.test(text)) return;
+    if (!/(15|20)[-\s]?min(?:ute)?/i.test(text)) return;
+
+    const next = text
+      .replace(/15[-\s]?min(?:ute)?/gi, "20-Min")
+      .replace(/20[-\s]?minute/gi, "20-Min");
+
+    if (next !== text) control.textContent = next;
+  });
+}
+
 function installFleetCalendarLinks() {
   if (document.documentElement.dataset.onsiteFleetCalendarLinksWired === "true") return;
   document.documentElement.dataset.onsiteFleetCalendarLinksWired = "true";
@@ -30,8 +44,9 @@ function installFleetCalendarLinks() {
       const label = (control.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
 
       const isFleetReviewAction =
-        /schedule\s+(?:a\s+)?20[-\s]?minute\s+meeting/.test(label) ||
-        /20[-\s]?min(?:ute)?\b.*(?:fleet\s+)?review/.test(label);
+        /schedule\s+(?:a\s+)?(?:15|20)[-\s]?minute\s+meeting/.test(label) ||
+        /(?:15|20)[-\s]?min(?:ute)?\b.*(?:fleet\s+)?review/.test(label) ||
+        /book\s+my\s+free\s+(?:15|20)[-\s]?min(?:ute)?\s+fleet\s+review/.test(label);
 
       const isMaintenanceAction =
         /schedule\s+fleet\s+maintenance/.test(label) ||
@@ -103,6 +118,7 @@ installFleetCalendarLinks();
 window.requestAnimationFrame(() => {
   installEnhancementsWithoutLegacyObserver();
   primeOfficialHeaderLogo();
+  standardizeFleetReviewCtas();
 
   document.getElementById("onsite-mobile-compatibility-css")?.remove();
   const mobileCss = document.createElement("link");
@@ -126,4 +142,7 @@ window.requestAnimationFrame(() => {
   document.head.appendChild(executionFixes);
 
   applyExecutionFixes();
+
+  window.setTimeout(standardizeFleetReviewCtas, 250);
+  window.setTimeout(standardizeFleetReviewCtas, 1000);
 });
