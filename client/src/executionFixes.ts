@@ -51,7 +51,10 @@ function forceHeaderSurface() {
 function recolorOrange(node: HTMLElement) {
   const classes = String(node.className || "");
   if (classes.includes("text-orange-")) node.style.setProperty("color", BRAND_YELLOW, "important");
-  if (classes.includes("bg-orange-")) node.style.setProperty("background-color", BRAND_YELLOW, "important");
+  if (classes.includes("bg-orange-")) {
+    node.style.setProperty("background", BRAND_NAVY, "important");
+    node.style.setProperty("background-color", BRAND_NAVY, "important");
+  }
   if (classes.includes("border-orange-")) node.style.setProperty("border-color", BRAND_YELLOW, "important");
 
   const style = node.getAttribute("style");
@@ -82,6 +85,13 @@ function applyBrandColor() {
   document.documentElement.style.setProperty("--onsite-orange", BRAND_YELLOW);
   document.documentElement.style.setProperty("--onsite-orange-rgb", BRAND_YELLOW_RGB);
   document.querySelectorAll<HTMLElement>("body *").forEach(recolorOrange);
+
+  document.querySelectorAll<HTMLElement>("#onsite-top-unlock").forEach((node) => {
+    node.style.setProperty("background", BRAND_NAVY, "important");
+    node.style.setProperty("background-color", BRAND_NAVY, "important");
+    node.style.setProperty("border-color", BRAND_YELLOW, "important");
+    node.style.setProperty("color", BRAND_YELLOW, "important");
+  });
 }
 
 function updateRangeVisual(range: HTMLInputElement) {
@@ -114,12 +124,19 @@ function restoreInteractiveControls() {
   });
 
   const overlay = document.getElementById("onsite-mobile-menu-overlay");
-  if (overlay && !overlay.classList.contains("is-open")) {
-    overlay.style.setProperty("pointer-events", "none", "important");
-    overlay.style.setProperty("visibility", "hidden", "important");
-  } else if (overlay) {
+  if (overlay) {
     overlay.style.removeProperty("pointer-events");
     overlay.style.removeProperty("visibility");
+    overlay.style.removeProperty("display");
+    overlay.style.removeProperty("opacity");
+  }
+
+  const menuButton = document.getElementById("onsite-mobile-menu-button");
+  if (menuButton) {
+    menuButton.style.setProperty("pointer-events", "auto", "important");
+    menuButton.style.setProperty("touch-action", "manipulation", "important");
+    menuButton.style.setProperty("position", "relative", "important");
+    menuButton.style.setProperty("z-index", "2147483001", "important");
   }
 }
 
