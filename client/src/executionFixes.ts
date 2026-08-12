@@ -51,10 +51,14 @@ function forceHeaderSurface() {
 function recolorOrange(node: HTMLElement) {
   const classes = String(node.className || "");
   if (classes.includes("text-orange-")) node.style.setProperty("color", BRAND_YELLOW, "important");
-  if (classes.includes("bg-orange-")) {
+
+  // Translucent orange utility surfaces are icon/badge backgrounds in this UI.
+  // Keep solid orange/yellow CTA buttons intact; only these muted surfaces become navy.
+  if (/\bbg-orange-\d+\/\d+\b/.test(classes)) {
     node.style.setProperty("background", BRAND_NAVY, "important");
     node.style.setProperty("background-color", BRAND_NAVY, "important");
   }
+
   if (classes.includes("border-orange-")) node.style.setProperty("border-color", BRAND_YELLOW, "important");
 
   const style = node.getAttribute("style");
