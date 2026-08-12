@@ -5,6 +5,7 @@ import "./productionPolish.css";
 import "./footerAndDrawerFix.css";
 import { installOnsiteEnhancements } from "./onsiteEnhancements";
 import { applyExecutionFixes } from "./executionFixes";
+import { installFleetLeadPayloadEnhancer } from "./fleetLeadPayload";
 
 const OFFICIAL_LOGO_SRC = "/assets/onsite_logo_official.png?v=20260811-final4";
 const FLEET_REVIEW_CALENDAR_URL =
@@ -12,6 +13,7 @@ const FLEET_REVIEW_CALENDAR_URL =
 const FLEET_MAINTENANCE_CALENDAR_URL =
   "https://api.armsreachdigital.com/widget/booking/vHMGXlJJ2Qom7wye7Pvz";
 
+installFleetLeadPayloadEnhancer();
 createRoot(document.getElementById("root")!).render(<App />);
 
 function installFleetCalendarLinks() {
