@@ -55,11 +55,11 @@
   #onsite-pete-strip.onsite-pete-strip {
     position: relative !important;
     display: block !important;
-    width: calc(100% - 24px) !important;
-    max-width: calc(100% - 24px) !important;
-    min-height: 230px !important;
-    margin: 30px 12px 32px !important;
-    padding: 24px 18px 24px 145px !important;
+    width: calc(100% - 12px) !important;
+    max-width: calc(100% - 12px) !important;
+    min-height: 190px !important;
+    margin: 22px 6px 28px !important;
+    padding: 18px 14px 18px 122px !important;
     box-sizing: border-box !important;
     overflow: visible !important;
     border-radius: 22px !important;
@@ -67,11 +67,11 @@
 
   #onsite-pete-strip .onsite-pete-avatar {
     position: absolute !important;
-    left: 16px !important;
-    bottom: -16px !important;
-    width: 118px !important;
+    left: 8px !important;
+    bottom: -10px !important;
+    width: 96px !important;
     height: auto !important;
-    max-height: 250px !important;
+    max-height: 195px !important;
     object-fit: contain !important;
     object-position: center bottom !important;
     z-index: 2 !important;
@@ -79,15 +79,16 @@
 
   #onsite-pete-strip .onsite-pete-copy {
     position: relative !important;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    min-height: 150px !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
     text-align: left !important;
-    align-self: auto !important;
-    grid-column: auto !important;
     box-sizing: border-box !important;
   }
 
@@ -103,15 +104,15 @@
   }
 
   #onsite-pete-strip .onsite-pete-copy strong {
-    margin: 0 0 10px !important;
-    font-size: 18px !important;
-    line-height: 1.28 !important;
+    margin: 0 0 8px !important;
+    font-size: clamp(1rem, 4.6vw, 1.18rem) !important;
+    line-height: 1.2 !important;
   }
 
   #onsite-pete-strip .onsite-pete-copy span {
     margin: 0 !important;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
+    font-size: clamp(0.82rem, 3.75vw, 0.95rem) !important;
+    line-height: 1.4 !important;
   }
 
   .onsite-loader-card {
@@ -150,25 +151,30 @@
   }
 
   #onsite-pete-strip.onsite-pete-strip {
-    width: calc(100% - 16px) !important;
-    max-width: calc(100% - 16px) !important;
-    min-height: 218px !important;
-    margin-left: 8px !important;
-    margin-right: 8px !important;
-    padding: 20px 14px 20px 126px !important;
+    width: calc(100% - 10px) !important;
+    max-width: calc(100% - 10px) !important;
+    min-height: 184px !important;
+    margin-left: 5px !important;
+    margin-right: 5px !important;
+    padding: 16px 12px 16px 112px !important;
   }
 
   #onsite-pete-strip .onsite-pete-avatar {
-    left: 10px !important;
-    width: 102px !important;
-    max-height: 225px !important;
+    left: 6px !important;
+    bottom: -8px !important;
+    width: 88px !important;
+    max-height: 180px !important;
+  }
+
+  #onsite-pete-strip .onsite-pete-copy {
+    min-height: 148px !important;
   }
 
   #onsite-pete-strip .onsite-pete-copy strong {
-    font-size: 16px !important;
+    font-size: 0.98rem !important;
   }
 
   #onsite-pete-strip .onsite-pete-copy span {
-    font-size: 13px !important;
+    font-size: 0.8rem !important;
   }
 }
